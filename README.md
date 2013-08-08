@@ -1,7 +1,7 @@
 # Responsive Images for SilverStripe
 
 ## Introduction
-This module provides the ability to send a series of image options to the client without actually loading any resources until a media query can be executed. This is particularly useful for sites that use responsive design, because it means that smaller viewports can receive images optimised for their size rather than pulling down a single image optimised for desktop. This module is highly configurable and relies on [url=https://github.com/scottjehl/picturefill]picturefill.js[/url] for the client-side magic.
+This module provides the ability to send a series of image options to the client without actually loading any resources until a media query can be executed. This is particularly useful for sites that use responsive design, because it means that smaller viewports can receive images optimised for their size rather than pulling down a single image optimised for desktop. This module is highly configurable and relies on [picturefill.js](https://github.com/scottjehl/picturefill) for the client-side magic.
 
 ## Requirements
 SilverStripe 3.0 or higher
