@@ -1,4 +1,4 @@
-silverstripe-responsive-images
-==============================
+# Responsive Images for SilverStripe
 
-Provides support for configurable sets of responsive images using Javascript
+## Introduction
+
