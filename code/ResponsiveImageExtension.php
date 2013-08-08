@@ -77,7 +77,7 @@ class ResponsiveImageExtension extends DataExtension
 		}
 
 		if(isset($args[0])) $defaultDimensions = $args[0];
-		elseif(isset($config['full_size'])) $defaultDimensions = $config['full_size'];
+		elseif(isset($config['default_size'])) $defaultDimensions = $config['default_size'];
 		else $defaultDimensions = Config::inst()->forClass("ResponsiveImageExtension")->default_size;
 
 		if(isset($args[1])) $methodName = $args[1];
