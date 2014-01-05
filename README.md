@@ -47,7 +47,7 @@ The output of these methods in the source code will look something like this:
     <span data-src="/assets/Uploads/_resampled/SetWidth400-my-image.jpeg" data-media="(min-width: 800px)"></span>    
     <span data-src="/assets/Uploads/_resampled/SetWidth800-my-image.jpeg" data-media="(min-width: 1200px)"><img alt="my-image.jpeg" src="/assets/Uploads/_resampled/SetWidth800-my-image.jpeg"></span>
     <noscript>
-        &lt;img src="&lt;img src="/assets/mock-files/_resampled/SetWidth640480-my-image.jpeg" alt="my-image.jpeg" /&gt;" alt="my-image.jpeg"&gt;
+        <img src="/assets/mock-files/_resampled/SetWidth640480-my-image.jpeg" alt="my-image.jpeg">
     </noscript>
 </span>
 ```
