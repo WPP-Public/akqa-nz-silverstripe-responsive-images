@@ -100,10 +100,11 @@ class ResponsiveImageExtension extends DataExtension
 			)));
 
 		}
+
 		list($default_width, $default_height) = $this->parseDimensions($defaultDimensions);
 		return $this->owner->customise(array(
 			'Sizes' => $sizes,
-			'DefaultURL' => $this->owner->getFormattedImage($methodName, $default_width, $default_height)
+			'DefaultImage' => $this->owner->getFormattedImage($methodName, $default_width, $default_height)
 		))->renderWith('ResponsiveImageSet');
 	}
 

@@ -3,6 +3,6 @@
     <span data-src="$Image.URL" data-media="$Query"></span>
     <% end_loop %>
     <noscript>
-        <img src="$DefaultURL" alt="$Title">
+        <img src="$DefaultImage.URL" alt="$Title">
     </noscript>
 </span>
