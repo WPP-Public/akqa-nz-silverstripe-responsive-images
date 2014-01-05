@@ -6,13 +6,11 @@
 	"use strict";
 
 	w.picturefill = function() {
-		console.log("go");
 		var ps = w.document.getElementsByTagName( "span" );
 
 		// Loop the pictures
 		for( var i = 0, il = ps.length; i < il; i++ ){
 			if( ps[ i ].getAttribute( "data-picture" ) !== null ){
-				console.log("shityeah");
 
 				var sources = ps[ i ].getElementsByTagName( "span" ),
 					matches = [];
