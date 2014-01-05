@@ -1,0 +1,9 @@
+{
+    "name": "heyday/silverstripe-responsive-images",
+    "description": "Configure and send a series of image size options to the client without loading any resources until a media query can be executed.",
+    "type": "silverstripe-module",
+    "license": "MIT",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}
