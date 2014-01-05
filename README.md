@@ -27,9 +27,9 @@ ResponsiveImageExtension:
         - {query: "(min-width: 400px)", size: 300x300}
         - {query: "(min-width: 400px) and (min-device-pixel-ratio: 2.0)", size: 600x600}
         - {query: "(min-width: 800px)", size: 700x700}
-        - {query: "(min-width: 800px) and and (min-device-pixel-ratio: 2.0), size: 1400x1400}
+        - {query: "(min-width: 800px) and (min-device-pixel-ratio: 2.0)", size: 1400x1400}
         - {query: "(min-width: 1000px)", size: 900x900}
-        - {query: "(min-width: 1000px) and and (min-device-pixel-ratio: 2.0), size: 1800x1800}
+        - {query: "(min-width: 1000px) and (min-device-pixel-ratio: 2.0)", size: 1800x1800}
       default_size: 1200x1200
 ```
 
