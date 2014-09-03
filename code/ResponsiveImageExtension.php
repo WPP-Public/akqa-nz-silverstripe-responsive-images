@@ -87,10 +87,10 @@ class ResponsiveImageExtension extends DataExtension
 		$sizes = ArrayList::create();
 		foreach($config['sizes'] as $i => $arr) {
 			if(!isset($arr['query'])) {
-				throw new Exeption("Responsive set $method does not have a 'query' element defined for size index $i");
+				throw new Exception("Responsive set $method does not have a 'query' element defined for size index $i");
 			}
 			if(!isset($arr['size'])) {
-				throw new Exeption("Responsive set $method does not have a 'size' element defined for size index $i");
+				throw new Exception("Responsive set $method does not have a 'size' element defined for size index $i");
 			}			
 
 			list($width, $height) = $this->parseDimensions($arr['size']);
