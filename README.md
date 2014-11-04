@@ -1,19 +1,24 @@
 # Responsive Images for SilverStripe
 
 ## Introduction
-This module provides the ability to send a series of image options to the client without actually loading any resources until a media query can be executed. This is particularly useful for sites that use responsive design, because it means that smaller viewports can receive images optimised for their size rather than pulling down a single image optimised for desktop. This module is highly configurable and relies on [picturefill.js](https://github.com/scottjehl/picturefill) for the client-side magic.
+
+This module provides the ability to send a series of configured image sizes to the client without actually loading any resources until a media query can be executed. This is particularly useful for sites that use responsive design, because it means that smaller viewports can receive images optimised for their size rather than pulling down a single image optimised for desktop. This module is highly configurable and relies on [picturefill.js](https://github.com/scottjehl/picturefill) for the client-side magic.
 
 ## Requirements
 SilverStripe 3.0 or higher
 
 ## Installation
-Place this repository in the root of your SilverStripe project, and run ?flush=1.
 
-## Usage
+    composer require heyday/silverstripe-responsive-images
 
-### Basic implementation
-First, define one or many sets of responsive images in your project config file.
+## How to use
+
+Once you have this module installed, you'll need to configure named sets of image sizes in your sites yaml config (eg. `mysite/_config/config.yml`). Note that there are no default image sets, but you can copy the config below to get started:
+
 ```
+---
+After: 'silverstripe-responsive-images/*'
+---
 ResponsiveImageExtension:
   sets:
     ResponsiveSet1:
