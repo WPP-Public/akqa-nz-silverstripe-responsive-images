@@ -1,11 +1,6 @@
-<span data-picture data-alt="$Title">
+<picture>
     <% loop $Sizes %>
-    <span data-src="$Image.URL" data-media="$Query"></span>
+        <source media="$Query" srcset="$Image.URL">
     <% end_loop %>
-    <!--[if (lt IE 9) & (!IEMobile)]>
-      <span data-src="$DefaultImage.URL"></span>
-    <![endif]-->
-    <noscript>
-        <img src="$DefaultImage.URL" alt="$Title">
-    </noscript>
-</span>
+    <img src="$DefaultImage.URL" alt="$Title">
+</picture>

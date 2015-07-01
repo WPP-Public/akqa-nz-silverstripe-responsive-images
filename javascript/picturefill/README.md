@@ -1,121 +1,54 @@
 # Picturefill
-A Responsive Images approach that you can use today that mimics the [proposed picture element](http://www.w3.org/TR/2013/WD-html-picture-element-20130226/) using `span`s, for safety sake.
+A [responsive image](http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content.html#embedded-content) polyfill.
+* Authors: Scott Jehl, Mat Marquis, Shawn Jansepar (2.0 refactor lead), and many more: see Authors.txt
+* License: MIT
 
+[![build-status](https://api.travis-ci.org/scottjehl/picturefill.svg)](https://travis-ci.org/scottjehl/picturefill) [<img src="https://pf-slackin.herokuapp.com/badge.svg" alt="Join Slack channel">](https://pf-slackin.herokuapp.com/)
 
-* Author: Scott Jehl (c) 2012
-* License: MIT/GPLv2
+Picturefill has three versions:
+* Version 2 (recommended) is a strict polyfill of the [Picture element draft specification](http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content.html#embedded-content) and is the main version in development.
+* Version 1 mimics the Picture element pattern with `span` elements. It is maintained in the 1.2 branch.
 
-**Demo URL:** [http://scottjehl.github.com/picturefill/](http://scottjehl.github.com/picturefill/)
+## Usage, Demos, Docs
+To find out how to use Picturefill on your sites, visit the project and demo site:
 
-**Note:** Picturefill works best in browsers that support CSS3 media queries. The demo page references (externally) the [matchMedia polyfill](https://github.com/paulirish/matchMedia.js/) which makes matchMedia work in `media-query`-supporting browsers that don't support `matchMedia`. `matchMedia` and the `matchMedia` polyfill are not required for `picturefill` to work, but they are required to support the `media` attributes on `picture` `source` elements. In non-media query-supporting browsers, the `matchMedia` polyfill will allow for querying native media types, such as `screen`, `print`, etc.
+[Picturefill Documentation, Downloads, and Demos Site](http://scottjehl.github.com/picturefill/)
 
-## Size and delivery
+## The gotchas
+Be it browsers, the `picture` spec, or picturefill, there are a couple gotchas you should be aware of when working with Picturefill.
 
-Currently, `picturefill.js` compresses to around 498bytes (~0.5kb), after minify and gzip. To minify, you might try these online tools: [Uglify]:(http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor]:(http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.
+- Firefox 38 and 39 has some bugs [[1]](https://bugzilla.mozilla.org/show_bug.cgi?id=1139560) [[2]](https://bugzilla.mozilla.org/show_bug.cgi?id=1139554) [[3]](https://bugzilla.mozilla.org/show_bug.cgi?id=1135812) where images won't update on screen resize. These should be fixed in Firefox 40.
 
-## Markup pattern and explanation
+- Per the `picture` spec, using `%` _isn't_ allowed in the `sizes` attribute. Using `%` will fallback to `100vw`.
 
-Mark up your responsive images like this. 
+- Trying to use the `src` attribute in a browser that _doesn't_ support `picture` natively can result in a double download. To avoid this, don't use the `src` attribute on the `img` tag:
 
 ```html
-	<span data-picture data-alt="A giant stone face at The Bayon temple in Angkor Thom, Cambodia">
-		<span data-src="small.jpg"></span>
-		<span data-src="medium.jpg"     data-media="(min-width: 400px)"></span>
-		<span data-src="large.jpg"      data-media="(min-width: 800px)"></span>
-		<span data-src="extralarge.jpg" data-media="(min-width: 1000px)"></span>
-
-		<!-- Fallback content for non-JS browsers. Same img src as the initial, unqualified source element. -->
-		<noscript>
-			<img src="external/imgs/small.jpg" alt="A giant stone face at The Bayon temple in Angkor Thom, Cambodia">
-		</noscript>
-	</span>
+<picture>
+    <source srcset="../img/sample.svg" media="(min-width: 768px)" />
+    <img srcset="default.png" alt="Sample pic" />
+</picture>
 ```
 
-Each `span[data-src]` element’s `data-media` attribute accepts any and all CSS3 media queries—such as `min` or `max` width, or even `min-resolution` for HD (retina) displays. 
-
-**NOTE:** if you need/prefer to use `div`s in your picturefill markup, you may want to grab v1.0.0: https://github.com/scottjehl/picturefill/tree/v1.0.0 . The current version here made the switch to `span` to better mimic an `img` element's inline nature, as well as fix a bug or two for wordpress users.
-
-### Explained...
-
-Notes on the markup above...
-
-* The `span[data-picture]` element's `alt` attribute is used as alternate text for the `img` element that picturefill generates upon a successful source match.
-* The `span[data-picture]` element can contain any number of `span[data-source]` elements. The above example may contain more than the average situation may call for.
-* Each `span[data-src]` element must have a `data-src` attribute specifying the image path. 
-* It's generally a good idea to include one source element with no `media` qualifier, so it'll apply everywhere - typically a mobile-optimized image is ideal here.
-* Each `[data-src]` element can have an optional `[data-media]` attribute to make it apply in specific media settings. Both media types and queries can be used, like a native `media` attribute, but support for media _queries_ depends on the browser (unsupporting browsers fail silently).
-* The `matchMedia` polyfill (included in the `/external` folder) is necessary to support the `data-media` attribute across browsers (such as IE9), even in browsers that support media queries, although it is becoming more widely supported in new browsers.
-* The `noscript` element wraps the fallback image for non-JavaScript environments, and including this wrapper prevents browsers from fetching the fallback image during page load (causing unnecessary overhead). Generally, it's a good idea to reference a small mobile optimized image here, as it's likely to be loaded in older/underpowered mobile devices.
-
-### How the `img` is appended
-
-Upon finding a matching `span[data-src]` element, picturefill will generate an `img` element referencing that `span`'s `data-src` attribute value and append the `img` to the active, matching `span[data-src]` element. This means you can target CSS styles specific to the active image based on the breakpoint that is in play, perhaps by adding a class to each span. For example, if you have the following markup...
+- If you only want to have an image show up at certain sizes, and not show up at others, you will need to use a transparent placeholder gif:
 
 ```html
-	<span class="picture" data-picture data-alt="A giant stone face at The Bayon temple in Angkor Thom, Cambodia">
-		<span class="sml" data-src="small.jpg"></span>
-		<span class="med" data-src="medium.jpg"     data-media="(min-width: 400px)"></span>
-		<span class="lrg" data-src="large.jpg"      data-media="(min-width: 800px)"></span>
-````
-
-...then you could write styles specific to each of the images, which may be handy for certain layout situations.
-
-```css
-	.picture .sml img { /* Styles for the small image */ }
-	.picture .med img { /* Styles for the medium image */ }
-	.picture .lrg img { /* Styles for the large image */ }
-````
-
-	
-### HD Media Queries
-
-Picturefill natively supports HD(Retina) image replacement.  While numerous other solutions exist, picturefill has the added benefit of performance for the user in only being served one image.
-
-* The `data-media` attribute supports [compound media queries](https://developer.mozilla.org/en-US/docs/CSS/Media_queries), allowing for very specific behaviors to emerge.  For example, a `data-media="(min-width: 400px) and (min-device-pixel-ratio: 2.0)` attribute can be used to serve a higher resolution version of the source instead of a standard definition image. Note you currently also need to add the `-webkit-min-device-pixel-ratio` prefix (e.g. for iOS devices).
-
-```html
-	<span data-picture data-alt="A giant stone face at The Bayon temple in Angkor Thom, Cambodia">
-		<span data-src="small.jpg"></span>
-		<span data-src="small_x2.jpg"      data-media="(min-device-pixel-ratio: 2.0)"></span>
-		<span data-src="medium.jpg"        data-media="(min-width: 400px)"></span>
-		<span data-src="medium_x2.jpg"     data-media="(min-width: 400px) and (min-device-pixel-ratio: 2.0)"></span>
-		<span data-src="large.jpg"         data-media="(min-width: 800px)"></span>
-		<span data-src="large_x2.jpg"      data-media="(min-width: 800px) and (min-device-pixel-ratio: 2.0)"></span>	
-		<span data-src="extralarge.jpg"    data-media="(min-width: 1000px)"></span>
-		<span data-src="extralarge_x2.jpg" data-media="(min-width: 1000px) and (min-device-pixel-ratio: 2.0)"></span>	
-
-		<!-- Fallback content for non-JS browsers. Same img src as the initial, unqualified source element. -->
-		<noscript>
-			<img src="external/imgs/small.jpg" alt="A giant stone face at The Bayon temple in Angkor Thom, Cambodia">
-		</noscript>
-	</span>
+<picture>
+    <source srcset="../img/sample.svg" media="(min-width: 768px)" />
+    <img srcset="data:image/gifbase64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+        alt="Sample pic" />
+</picture>
 ```
 
-* Note: Supporting this many breakpoints quickly adds size to the DOM and increases implementation and maintenance time, so use this technique sparingly.
+## Contributing
+For information on how to contribute code to Picturefill, check out [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
-### Supporting IE Desktop
+## Issues
+If you find a bug in Picturefill, please add it to [the issue tracker](https://github.com/scottjehl/picturefill/issues)
 
-Internet Explorer 8 and older have no support for CSS3 Media Queries, so in the examples above, IE will receive the first `data-src`
- image reference (or the last one it finds that has no `data-media` attribute. If you'd like to serve a larger image to IE desktop
-browsers, you might consider using conditional comments, like this:
-
-```html
-	<span data-picture data-alt="A giant stone face at The Bayon temple in Angkor Thom, Cambodia">
-		<span data-src="small.jpg"></span>
-		<span data-src="medium.jpg" data-media="(min-width: 400px)"></span>
-
-		<!--[if (lt IE 9) & (!IEMobile)]>
-		    <span data-src="medium.jpg"></span>
-		<![endif]-->
-
-		<!-- Fallback content for non-JS browsers. Same img src as the initial, unqualified source element. -->
-		<noscript>
-			<img src="small.jpg" alt="A giant stone face at The Bayon temple in Angkor Thom, Cambodia">
-		</noscript>
-	</span>
-```
+## Discussion
+Picturefill discussion takes place via Slack. For an invitation, visit [https://pf-slackin.herokuapp.com/](https://pf-slackin.herokuapp.com/)
 
 ## Support
 
 Picturefill supports a broad range of browsers and devices (there are currently no known unsupported browsers), provided that you stick with the markup conventions provided.
-

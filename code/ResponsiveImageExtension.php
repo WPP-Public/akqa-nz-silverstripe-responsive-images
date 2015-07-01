@@ -51,6 +51,7 @@ class ResponsiveImageExtension extends DataExtension
 	 */
 	public function __call($method, $args) 
 	{
+
 		if($config = $this->getConfigForSet($method)) {
 			return $this->createResponsiveSet($config, $args, $method);
 		}
@@ -69,8 +70,8 @@ class ResponsiveImageExtension extends DataExtension
 	 */
 	protected function createResponsiveSet($config, $args, $method) 
 	{
-		Requirements::javascript(RESPONSIVE_IMAGES_DIR.'/javascript/picturefill/external/matchmedia.js');
-		Requirements::javascript(RESPONSIVE_IMAGES_DIR.'/javascript/picturefill/picturefill.js');
+//		Requirements::javascript(RESPONSIVE_IMAGES_DIR.'/javascript/picturefill/external/matchmedia.js');
+		Requirements::javascript(RESPONSIVE_IMAGES_DIR.'/javascript/picturefill/picturefill.min.js');
 
 		if(!isset($config['sizes']) || !is_array($config['sizes'])) {
 			throw new Exception("Responsive set $method does not have sizes defined in its config.");
