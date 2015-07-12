@@ -5,7 +5,7 @@
 /**
  * Defines the extension to the Image class that injects methods for
  * for responsive image sets. Image sets are defined in the config layer, e.g:
- * 
+ *
  * ResponsiveImageExtension:
  *   sets:
  *     MyResponsiveImageSet:
@@ -22,7 +22,7 @@
  * @author Aaron Carlino <aaron.carlino@heyday.co.nz>
  *
  */
-class ResponsiveImageExtension extends DataExtension 
+class ResponsiveImageExtension extends DataExtension
 {
 
 
@@ -49,7 +49,7 @@ class ResponsiveImageExtension extends DataExtension
 	 * @param array $args The arguments passed to the method
 	 * @return SSViewer
 	 */
-	public function __call($method, $args) 
+	public function __call($method, $args)
 	{
 
 		if($config = $this->getConfigForSet($method)) {
@@ -68,9 +68,8 @@ class ResponsiveImageExtension extends DataExtension
 	 * @param string $method The method, or responsive image set, to generate
 	 * @return SSViewer
 	 */
-	protected function createResponsiveSet($config, $args, $method) 
+	protected function createResponsiveSet($config, $args, $method)
 	{
-//		Requirements::javascript(RESPONSIVE_IMAGES_DIR.'/javascript/picturefill/external/matchmedia.js');
 		Requirements::javascript(RESPONSIVE_IMAGES_DIR.'/javascript/picturefill/picturefill.min.js');
 
 		if(!isset($config['sizes']) || !is_array($config['sizes'])) {
@@ -92,7 +91,7 @@ class ResponsiveImageExtension extends DataExtension
 			}
 			if(!isset($arr['size'])) {
 				throw new Exception("Responsive set $method does not have a 'size' element defined for size index $i");
-			}			
+			}
 
 			list($width, $height) = $this->parseDimensions($arr['size']);
 			$sizes->push(ArrayData::create(array(
@@ -118,9 +117,9 @@ class ResponsiveImageExtension extends DataExtension
 	 * through all the defined sets and making a case-insensitive comparison.
 	 *
 	 * @param string $setName The name of the responsive image set to get
-	 * @return array	 
+	 * @return array
 	 */
-	protected function getConfigForSet($setName) 
+	protected function getConfigForSet($setName)
 	{
 		if(!$this->_configCache) {
 			$this->_configCache = Config::inst()->forClass("ResponsiveImageExtension")->sets;
@@ -145,14 +144,14 @@ class ResponsiveImageExtension extends DataExtension
 	 *
 	 * @return array
 	 */
-	protected function getResponsiveSets() 
+	protected function getResponsiveSets()
 	{
 		if(!$this->_responsiveSetCache) {
 			$list = array ();
-			if($sets = Config::inst()->forClass("ResponsiveImageExtension")->sets) {			
+			if($sets = Config::inst()->forClass("ResponsiveImageExtension")->sets) {
 				foreach($sets as $setName => $config) {
 					$list[] = strtolower($setName);
-				}				
+				}
 			}
 			$this->_responsiveSetCache = $list;
 		}
@@ -169,7 +168,7 @@ class ResponsiveImageExtension extends DataExtension
 	 * @return array
 	 * @todo Should this be a static method?
 	 */
-	protected function parseDimensions($size) 
+	protected function parseDimensions($size)
 	{
 			$width = $size;
 			$height = null;
@@ -188,7 +187,7 @@ class ResponsiveImageExtension extends DataExtension
 	 *
 	 * @return array
 	 */
-	public function allMethodNames() 
+	public function allMethodNames()
 	{
 		$methods = array ('createresponsiveset');
 		return array_merge($methods, $this->getResponsiveSets());
