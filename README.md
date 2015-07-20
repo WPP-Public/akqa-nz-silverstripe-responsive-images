@@ -89,5 +89,6 @@ It can also be passed into your template function.
 $MyImage.MyResponsiveSet(800x600, CroppedImage)
 ```
 
+### Responsive images in the WYSIWYG editor
 
-
+See the [Silverstripe responsive WYSIWYG images module](https://github.com/sheadawson/silverstripe-responsive-wysiwyg-images)
