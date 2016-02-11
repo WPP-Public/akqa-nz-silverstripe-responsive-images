@@ -5,5 +5,6 @@ Image:
   extensions:
     - ResponsiveImageExtension
 ResponsiveImageExtension:
+  include_picturefilljs: true
   default_method: SetWidth
   default_size: 800x600
