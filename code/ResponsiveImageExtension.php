@@ -1,197 +1,219 @@
 <?php
 
+namespace Heyday\SilverStripeResponsiveImages;
 
+use ArrayData;
+use ArrayList;
+use Config;
+use Exception;
+use Requirements;
 
 /**
- * Defines the extension to the Image class that injects methods for
- * for responsive image sets. Image sets are defined in the config layer, e.g:
+ * An extension to the Image class to inject methods for responsive image sets.
+ * Image sets are defined in the config layer, e.g:
  *
- * ResponsiveImageExtension:
+ * Heyday\SilverStripeResponsiveImages\ResponsiveImageExtension:
  *   sets:
  *     MyResponsiveImageSet:
+ *       method: CroppedImage
  *       sizes:
- *         - {query: "(min-width: 200px)", size: 100}
- *         - {query: "(min-width: 800px)", size: 400}
- *         - {query: "(min-width: 1200px)  and (min-device-pixel-ratio: 2.0)", size: 800}
+ *         "(min-width: 200px)": [200, 100]
+ *         "(min-width: 800px)": [200, 400]
+ *         "(min-width: 1200px) and (min-device-pixel-ratio: 2.0)": [800, 400]
+ *       default_args: [200, 400]
  *
- * This provides $MyImage.MyResponsiveImageSet to the template.
- *
- * For more documentation on implementation, see the README file.
- *
- * @package heyday/silverstripe-responsive-images
- * @author Aaron Carlino <aaron.carlino@heyday.co.nz>
- *
+ * This provides $MyImage.MyResponsiveImageSet to the template. For more
+ * documentation on implementation, see the README file.
  */
-class ResponsiveImageExtension extends DataExtension
+class ResponsiveImageExtension extends \Extension
 {
+    /**
+     * @var array
+     * @config
+     */
+    private static $default_args = array(800, 600);
 
+    /**
+     * @var string
+     * @config
+     */
+    private static $default_method = 'SetWidth';
 
-	/**
-	 * @var array The list of responsive set methods, in lowercase, to be injected into the Image class
-	 */
-	protected $_responsiveSetCache = null;
+    /**
+     * @var boolean
+     * @config
+     */
+    private static $htmleditorfield_srcset = true;
 
+    /**
+     * @var array
+     * @config
+     */
+    private static $htmleditorfield_srcset_densities = array(1, 2);
 
+    /**
+     * @var array A cached copy of the image sets
+     */
+    protected $configSets;
 
-	/**
-	 * @var Config_ForClass A cached copy of the config object for ResponsiveImageExtension
-	 */
-	protected $_configCache = null;
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->configSets = Config::inst()->get(__CLASS__, 'sets');
+    }
 
+    /**
+     * A wildcard method for handling responsive sets as template functions,
+     * e.g. $MyImage.ResponsiveSet1
+     *
+     * @param string $method The method called
+     * @param array $args The arguments passed to the method
+     * @return HTMLText
+     */
+    public function __call($method, $args)
+    {
+        if ($config = $this->getConfigForSet($method)) {
+            return $this->createResponsiveSet($config, $args, $method);
+        }
+    }
 
+    /**
+     * Requires the necessary JS and sends the required HTML structure to the
+     * template for a responsive image set.
+     *
+     * @param array $config The configuration of the responsive image set
+     * @param array $defaultArgs The arguments passed to the responsive image
+     *                           method call, e.g. $MyImage.ResponsiveSet(800x600)
+     * @param string $set The method, or responsive image set, to generate
+     * @return SSViewer
+     */
+    protected function createResponsiveSet($config, $defaultArgs, $set)
+    {
+        Requirements::javascript(RESPONSIVE_IMAGES_DIR . '/javascript/picturefill/picturefill.min.js');
 
+        if (!isset($config['sizes']) || !is_array($config['sizes'])) {
+            throw new Exception("Responsive set $set does not have sizes defined in its config.");
+        }
 
-	/**
-	 * A wildcard method for handling responsive sets as template functions,
-	 * e.g. $MyImage.ResponsiveSet1
-	 *
-	 * @param string $method The method called
-	 * @param array $args The arguments passed to the method
-	 * @return SSViewer
-	 */
-	public function __call($method, $args)
-	{
+        if (empty($defaultArgs)) {
+            if (isset($config['default_args'])) {
+                $defaultArgs = $config['default_args'];
+            } else {
+                $defaultArgs = Config::inst()->get(__CLASS__, 'default_args');
+            }
+        }
 
-		if($config = $this->getConfigForSet($method)) {
-			return $this->createResponsiveSet($config, $args, $method);
-		}
-	}
+        if (isset($config['method'])) {
+            $methodName = $config['method'];
+        } else {
+            $methodName = Config::inst()->get(__CLASS__, 'default_method');
+        }
 
+        $sizes = ArrayList::create();
+        foreach ($config['sizes'] as $query => $args) {
+            if (is_numeric($query) || !$query) {
+                throw new Exception("Responsive set $set has an empty media query defined.
+					Please check your config format");
+            }
 
+            if (!is_array($args) || empty($args)) {
+                throw new Exception("Responsive set $set doesn't have any arguments provided for the query: $query");
+            }
 
-	/**
-	 * Requires the necessary JS and sends the required HTML structure to the template
-	 * for a responsive image set
-	 *
-	 * @param array $config The configuration of the responsive image set from the config
-	 * @param array $args The arguments passed to the responsive image method, e.g. $MyImage.ResponsiveSet1(800x600)
-	 * @param string $method The method, or responsive image set, to generate
-	 * @return SSViewer
-	 */
-	protected function createResponsiveSet($config, $args, $method)
-	{
-		Requirements::javascript(RESPONSIVE_IMAGES_DIR.'/javascript/picturefill/picturefill.min.js');
+            array_unshift($args, $methodName);
+            $image = call_user_func_array(array($this->owner, 'getFormattedImage'), $args);
+            $sizes->push(ArrayData::create(array(
+                'Image' => $image,
+                'Query' => $query
+            )));
+        }
 
-		if(!isset($config['sizes']) || !is_array($config['sizes'])) {
-			throw new Exception("Responsive set $method does not have sizes defined in its config.");
-		}
+        // The first argument may be an image method such as 'CroppedImage'
+        if (!isset($defaultArgs[0]) || !$this->owner->hasMethod($defaultArgs[0])) {
+            array_unshift($defaultArgs, $methodName);
+        }
 
-		if(isset($args[0])) $defaultDimensions = $args[0];
-		elseif(isset($config['default_size'])) $defaultDimensions = $config['default_size'];
-		else $defaultDimensions = Config::inst()->forClass("ResponsiveImageExtension")->default_size;
+        $image = call_user_func_array(array($this->owner, 'getFormattedImage'), $defaultArgs);
+        return $this->owner->customise(array(
+            'Sizes' => $sizes,
+            'DefaultImage' => $image
+        ))->renderWith('ResponsiveImageSet');
+    }
 
-		if(isset($args[1])) $methodName = $args[1];
-		elseif(isset($config['method'])) $methodName = $config['method'];
-		else $methodName = Config::inst()->forClass("ResponsiveImageExtension")->default_method;
+    /**
+     * Due to {@link Object::allMethodNames()} requiring methods to be expressed
+     * in all lowercase, getting the config for a given method requires iterating
+     * through all the defined sets and making a case-insensitive comparison.
+     *
+     * @param string $setName The name of the responsive image set to get
+     * @return array|false
+     */
+    protected function getConfigForSet($setName)
+    {
+        if (!$this->configSets) {
+            return false;
+        }
 
-		$sizes = ArrayList::create();
-		foreach($config['sizes'] as $i => $arr) {
-			if(!isset($arr['query'])) {
-				throw new Exception("Responsive set $method does not have a 'query' element defined for size index $i");
-			}
-			if(!isset($arr['size'])) {
-				throw new Exception("Responsive set $method does not have a 'size' element defined for size index $i");
-			}
+        foreach ($this->configSets as $k => $v) {
+            if (strtolower($k) === strtolower($setName)) {
+                return $v;
+            }
+        }
 
-			list($width, $height) = $this->parseDimensions($arr['size']);
-			$sizes->push(ArrayData::create(array(
-				'Image' => $this->owner->getFormattedImage($methodName, $width, $height),
-				'Query' => $arr['query']
-			)));
+        return false;
+    }
 
-		}
+    /**
+     * Returns a list of available image sets.
+     *
+     * @return array
+     */
+    protected function getResponsiveSets()
+    {
+        $list = array();
+        foreach ($this->configSets as $setName => $config) {
+            $list[] = strtolower($setName);
+        }
 
-		list($default_width, $default_height) = $this->parseDimensions($defaultDimensions);
-		return $this->owner->customise(array(
-			'Sizes' => $sizes,
-			'DefaultImage' => $this->owner->getFormattedImage($methodName, $default_width, $default_height)
-		))->renderWith('ResponsiveImageSet');
-	}
+        return $list;
+    }
 
+    /**
+     * @param File $imageObject
+     * @param DOMElement $imageElement
+     */
+    public function processImage($imageObject, $imageElement)
+    {
+        if (!$imageObject || !Config::inst()->get(__CLASS__, 'htmleditorfield_srcset')) {
+            return;
+        }
 
+        $width = (int)$imageElement->getAttribute('width');
+        $height = (int)$imageElement->getAttribute('height');
 
+        $densities = (array)Config::inst()->get(__CLASS__, 'htmleditorfield_srcset_densities');
+        $sources = array();
+        foreach ($densities as $density) {
+            $density = (int)$density;
+            $resized = $imageObject->ResizedImage($width * $density, $height * $density);
+            // Output in the format "assets/foo.jpg 1x"
+            $sources[] = $resized->getRelativePath() . " {$density}x";
+        }
 
-	/**
-	 * Due to {@link Object::allMethodNames()} requiring methods to be expressed
-	 * in all lowercase, getting the config for a given method requires iterating
-	 * through all the defined sets and making a case-insensitive comparison.
-	 *
-	 * @param string $setName The name of the responsive image set to get
-	 * @return array
-	 */
-	protected function getConfigForSet($setName)
-	{
-		if(!$this->_configCache) {
-			$this->_configCache = Config::inst()->forClass("ResponsiveImageExtension")->sets;
-		}
+        $srcset = implode(', ', $sources);
+        $imageElement->setAttribute('srcset', $srcset);
+    }
 
-		if($this->_configCache) {
-			foreach($this->_configCache as $k => $v) {
-				if(strtolower($k) == strtolower($setName)) {
-					return $v;
-				}
-			}
-		}
-
-		return false;
-	}
-
-
-
-
-	/**
-	 * An accessor for $_responsiveSetCache. Stores cache if not set
-	 *
-	 * @return array
-	 */
-	protected function getResponsiveSets()
-	{
-		if(!$this->_responsiveSetCache) {
-			$list = array ();
-			if($sets = Config::inst()->forClass("ResponsiveImageExtension")->sets) {
-				foreach($sets as $setName => $config) {
-					$list[] = strtolower($setName);
-				}
-			}
-			$this->_responsiveSetCache = $list;
-		}
-
-		return $this->_responsiveSetCache;
-	}
-
-
-
-	/**
-	 * Parses a string such as "400" or "400x600" and returns width and height values
-	 *
-	 * @param string $size The string to parse
-	 * @return array
-	 * @todo Should this be a static method?
-	 */
-	protected function parseDimensions($size)
-	{
-			$width = $size;
-			$height = null;
-			if(strpos($size, 'x') !== false) {
-				return explode("x", $size);
-			}
-
-			return array($width, $height);
-	}
-
-
-
-
-	/**
-	 * Defines all the methods that can be called in this class
-	 *
-	 * @return array
-	 */
-	public function allMethodNames()
-	{
-		$methods = array ('createresponsiveset');
-		return array_merge($methods, $this->getResponsiveSets());
-	}
-
-
+    /**
+     * Defines all the methods that can be called in this class.
+     *
+     * @return array
+     */
+    public function allMethodNames()
+    {
+        return $this->getResponsiveSets();
+    }
 }
