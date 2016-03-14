@@ -1,9 +1,9 @@
 ---
-Name: reponsiveimages
+Name: responsiveimages
 ---
+HtmlEditorField:
+  extensions:
+    - Heyday\SilverStripeResponsiveImages\ResponsiveImageExtension
 Image:
   extensions:
-    - ResponsiveImageExtension
-ResponsiveImageExtension:
-  default_method: SetWidth
-  default_size: 800x600
+    - Heyday\SilverStripeResponsiveImages\ResponsiveImageExtension
