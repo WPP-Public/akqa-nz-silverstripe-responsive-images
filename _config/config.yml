@@ -1,9 +1,6 @@
 ---
-Name: reponsiveimages
+Name: responsiveimages
 ---
 Image:
   extensions:
-    - ResponsiveImageExtension
-ResponsiveImageExtension:
-  default_method: SetWidth
-  default_size: 800x600
+    - Heyday\ResponsiveImages\ResponsiveImageExtension
