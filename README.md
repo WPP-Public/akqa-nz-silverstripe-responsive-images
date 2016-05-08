@@ -19,7 +19,7 @@ SilverStripe 3.0 or higher
 Once you have this module installed, you’ll need to configure named sets of image sizes in your site’s yaml config (eg. `mysite/_config/config.yml`).
 Note that there are no default image sets, but you can copy the config below to get started:
 
-```
+```yml
 ---
 After: 'silverstripe-responsive-images/*'
 ---
@@ -30,6 +30,7 @@ Heyday\ResponsiveImages\ResponsiveImageExtension:
         '(min-width: 1200px)': [800]
         '(min-width: 800px)': [400]
         '(min-width: 200px)': [100]
+
     ResponsiveSet2:
       method: CroppedImage
       arguments:
@@ -40,6 +41,7 @@ Heyday\ResponsiveImages\ResponsiveImageExtension:
         '(min-width: 400px) and (min-device-pixel-ratio: 2.0)': [600, 600]
         '(min-width: 400px)': [300, 300]
       default_arguments: [1200, 1200]
+
     ResponsiveSet3:
       method: PaddedImage
       arguments:
