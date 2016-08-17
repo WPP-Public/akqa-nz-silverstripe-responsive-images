@@ -45,9 +45,9 @@ Heyday\ResponsiveImages\ResponsiveImageExtension:
     ResponsiveSet3:
       method: PaddedImage
       arguments:
-        '(min-width: 800px)': [700, 700, '#666666']
-        '(min-width: 400px)': [300, 300, '#666666']
-      default_arguments: [1200, 1200, '#666666']
+        '(min-width: 800px)': [700, 700, '666666']
+        '(min-width: 400px)': [300, 300, '666666']
+      default_arguments: [1200, 1200, '666666']
 ```
 
 Now, run `?flush=1` to refresh the config manifest, and you will have the new methods injected into your Image class that you can use in templates.
