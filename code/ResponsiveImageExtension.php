@@ -100,6 +100,11 @@ class ResponsiveImageExtension extends \Extension
             $methodName = Config::inst()->get(__CLASS__, 'default_method');
         }
 
+        if (!$this->owner->hasMethod($methodName)) {
+            throw new \RuntimeException(get_class($this->owner) . ' has no method ' . $methodName);
+        }
+
+        // Create the resampled images for each query in the set
         $sizes = ArrayList::create();
         foreach ($config['arguments'] as $query => $args) {
             if (is_numeric($query) || !$query) {
@@ -110,24 +115,28 @@ class ResponsiveImageExtension extends \Extension
                 throw new Exception("Responsive set $set doesn't have any arguments provided for the query: $query");
             }
 
-            array_unshift($args, $methodName);
-            $image = call_user_func_array(array($this->owner, 'getFormattedImage'), $args);
             $sizes->push(ArrayData::create(array(
-                'Image' => $image,
+                'Image' => $this->getResampledImage($methodName, $args),
                 'Query' => $query
             )));
         }
 
-        // The first argument may be an image method such as 'CroppedImage'
-        if (!isset($defaultArgs[0]) || !$this->owner->hasMethod($defaultArgs[0])) {
-            array_unshift($defaultArgs, $methodName);
-        }
-
-        $image = call_user_func_array(array($this->owner, 'getFormattedImage'), $defaultArgs);
         return $this->owner->customise(array(
             'Sizes' => $sizes,
-            'DefaultImage' => $image
+            'DefaultImage' => $this->getResampledImage($methodName, $defaultArgs)
         ))->renderWith('ResponsiveImageSet');
+    }
+
+    /**
+     * Return a resampled image equivalent to $Image.MethodName(...$args) in a template
+     *
+     * @param string $methodName
+     * @param array $args
+     * @return Image
+     */
+    protected function getResampledImage($methodName, $args)
+    {
+        return call_user_func(array($this->owner, '__call'), $methodName, $args);
     }
 
     /**
