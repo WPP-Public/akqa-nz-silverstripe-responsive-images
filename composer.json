@@ -5,6 +5,6 @@
     "type": "silverstripe-module",
     "license": "MIT",
     "require": {
-        "composer/installers": "~1.0"
+        "silverstripe/framework": "^4.0"
     }
 }
