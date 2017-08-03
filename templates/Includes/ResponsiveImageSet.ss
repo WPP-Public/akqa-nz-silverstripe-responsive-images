@@ -5,5 +5,5 @@
 	<source media="$Query" srcset="$Image.URL">
 	<% end_loop %>
 	<!--[if IE 9]></video><![endif]-->
-	<img src="$DefaultImage.URL" alt="$Title">
+	<img src="$DefaultImage.URL"<% if $ExtraClasses %> class="$ExtraClasses"<% end_if %> alt="$Title">
 </picture>
