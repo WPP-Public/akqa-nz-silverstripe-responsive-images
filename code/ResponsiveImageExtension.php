@@ -40,6 +40,12 @@ class ResponsiveImageExtension extends \Extension
     private static $default_method = 'SetWidth';
 
     /**
+     * @var string
+     * @config
+     */
+    private static $default_css_classes = '';
+
+    /**
      * @var array A cached copy of the image sets
      */
     protected $configSets;
@@ -100,6 +106,12 @@ class ResponsiveImageExtension extends \Extension
             $methodName = Config::inst()->get(__CLASS__, 'default_method');
         }
 
+        if (isset($config['css_classes'])) {
+            $cssClasses = $config['css_classes'];
+        } else {
+            $cssClasses = Config::inst()->get(__CLASS__, 'default_css_classes');
+        }
+
         $sizes = ArrayList::create();
         foreach ($config['arguments'] as $query => $args) {
             if (is_numeric($query) || !$query) {
@@ -126,7 +138,8 @@ class ResponsiveImageExtension extends \Extension
         $image = call_user_func_array(array($this->owner, 'getFormattedImage'), $defaultArgs);
         return $this->owner->customise(array(
             'Sizes' => $sizes,
-            'DefaultImage' => $image
+            'DefaultImage' => $image,
+            'ExtraClasses' => $cssClasses
         ))->renderWith('ResponsiveImageSet');
     }
 
