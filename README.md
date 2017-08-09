@@ -26,6 +26,7 @@ After: 'silverstripe-responsive-images/*'
 Heyday\ResponsiveImages\ResponsiveImageExtension:
   sets:
     ResponsiveSet1:
+      css_classes: classname
       arguments:
         '(min-width: 1200px)': [800]
         '(min-width: 800px)': [400]
