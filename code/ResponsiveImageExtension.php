@@ -122,6 +122,12 @@ class ResponsiveImageExtension extends \Extension
                 throw new Exception("Responsive set $set doesn't have any arguments provided for the query: $query");
             }
 
+            if (\ClassInfo::exists('FocusPointImage') && $methodName == 'CroppedFocusedImage') {
+                $cropData = $this->owner->calculateCrop($args[0], $args[1]);
+                $args[] = $cropData['CropAxis'];
+                $args[] = $cropData['CropOffset'];
+            }
+
             array_unshift($args, $methodName);
             $image = call_user_func_array(array($this->owner, 'getFormattedImage'), $args);
             $sizes->push(ArrayData::create(array(
@@ -133,6 +139,14 @@ class ResponsiveImageExtension extends \Extension
         // The first argument may be an image method such as 'CroppedImage'
         if (!isset($defaultArgs[0]) || !$this->owner->hasMethod($defaultArgs[0])) {
             array_unshift($defaultArgs, $methodName);
+        }
+         
+        if (\ClassInfo::exists('FocusPointImage') && $methodName == 'CroppedFocusedImage') {
+            if ($this->owner->hasMethod('calculateCrop')) {
+                $cropData = $this->owner->calculateCrop($defaultArgs[1], $defaultArgs[2]);
+                $defaultArgs[] = $cropData['CropAxis'];
+                $defaultArgs[] = $cropData['CropOffset'];
+            }
         }
 
         $image = call_user_func_array(array($this->owner, 'getFormattedImage'), $defaultArgs);
