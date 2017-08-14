@@ -2,11 +2,13 @@
 
 namespace Heyday\ResponsiveImages;
 
-use ArrayData;
-use ArrayList;
-use Config;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Extension;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\ArrayData;
+use SilverStripe\View\Requirements;
 use Exception;
-use Requirements;
+use RuntimeException;
 
 /**
  * An extension to the Image class to inject methods for responsive image sets.
@@ -25,13 +27,13 @@ use Requirements;
  * This provides $MyImage.MyResponsiveImageSet to the template. For more
  * documentation on implementation, see the README file.
  */
-class ResponsiveImageExtension extends \Extension
+class ResponsiveImageExtension extends Extension
 {
     /**
      * @var array
      * @config
      */
-    private static $default_arguments = array(800, 600);
+    private static $default_arguments = [800, 600];
 
     /**
      * @var string
@@ -56,7 +58,7 @@ class ResponsiveImageExtension extends \Extension
     public function __construct()
     {
         parent::__construct();
-        $this->configSets = Config::inst()->get(__CLASS__, 'sets') ?: array();
+        $this->configSets = Config::inst()->get(__CLASS__, 'sets') ?: [];
     }
 
     /**
@@ -106,12 +108,12 @@ class ResponsiveImageExtension extends \Extension
             $methodName = Config::inst()->get(__CLASS__, 'default_method');
         }
 
-        if (isset($config['css_classes'])) {
-            $cssClasses = $config['css_classes'];
-        } else {
-            $cssClasses = Config::inst()->get(__CLASS__, 'default_css_classes');
+
+        if (!$this->owner->hasMethod($methodName)) {
+            throw new RuntimeException(get_class($this->owner) . ' has no method ' . $methodName);
         }
 
+        // Create the resampled images for each query in the set
         $sizes = ArrayList::create();
         foreach ($config['arguments'] as $query => $args) {
             if (is_numeric($query) || !$query) {
@@ -122,25 +124,29 @@ class ResponsiveImageExtension extends \Extension
                 throw new Exception("Responsive set $set doesn't have any arguments provided for the query: $query");
             }
 
-            array_unshift($args, $methodName);
-            $image = call_user_func_array(array($this->owner, 'getFormattedImage'), $args);
-            $sizes->push(ArrayData::create(array(
-                'Image' => $image,
+            $sizes->push(ArrayData::create([
+                'Image' => $this->getResampledImage($methodName, $args),
                 'Query' => $query
-            )));
+            ]));
         }
 
-        // The first argument may be an image method such as 'CroppedImage'
-        if (!isset($defaultArgs[0]) || !$this->owner->hasMethod($defaultArgs[0])) {
-            array_unshift($defaultArgs, $methodName);
-        }
-
-        $image = call_user_func_array(array($this->owner, 'getFormattedImage'), $defaultArgs);
-        return $this->owner->customise(array(
+        return $this->owner->customise([
             'Sizes' => $sizes,
-            'DefaultImage' => $image,
-            'ExtraClasses' => $cssClasses
-        ))->renderWith('ResponsiveImageSet');
+
+            'DefaultImage' => $this->getResampledImage($methodName, $defaultArgs)
+        ])->renderWith('Includes/ResponsiveImageSet');
+    }
+
+    /**
+     * Return a resampled image equivalent to $Image.MethodName(...$args) in a template
+     *
+     * @param string $methodName
+     * @param array $args
+     * @return Image
+     */
+    protected function getResampledImage($methodName, $args)
+    {
+        return call_user_func_array([$this->owner, $methodName], $args);
     }
 
     /**

@@ -1,6 +1,6 @@
 ---
 Name: responsiveimages
 ---
-Image:
+SilverStripe\Assets\Image:
   extensions:
     - Heyday\ResponsiveImages\ResponsiveImageExtension
