@@ -8,7 +8,9 @@ This is particularly useful for sites that use responsive design, because it mea
 This module is highly configurable and relies on [picturefill.js](https://github.com/scottjehl/picturefill) for the client-side magic.
 
 ## Requirements
-SilverStripe 3.0 or higher
+SilverStripe 4.0 or higher
+
+For a SS 3.x compatible-version, please see branch 1.0
 
 ## Installation
 
