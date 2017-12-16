@@ -7,7 +7,7 @@
     "require": {
         "silverstripe/vendor-plugin": "^1.0",
         "silverstripe/framework": "^4.0"
-    }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
