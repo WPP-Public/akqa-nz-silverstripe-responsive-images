@@ -35,7 +35,7 @@ Heyday\ResponsiveImages\ResponsiveImageExtension:
         '(min-width: 200px)': [100]
 
     ResponsiveSet2:
-      method: CroppedImage
+      method: Fill
       arguments:
         '(min-width: 1000px) and (min-device-pixel-ratio: 2.0)': [1800, 1800]
         '(min-width: 1000px)': [900, 900]
@@ -46,7 +46,7 @@ Heyday\ResponsiveImages\ResponsiveImageExtension:
       default_arguments: [1200, 1200]
 
     ResponsiveSet3:
-      method: PaddedImage
+      method: Pad
       arguments:
         '(min-width: 800px)': [700, 700, '666666']
         '(min-width: 400px)': [300, 300, '666666']
@@ -93,12 +93,12 @@ $MyImage.MyResponsiveSet(900, 600)
 The default resampling method is SetWidth, but this can be overridden in your config.
 ```yml
 Heyday\ResponsiveImages\ResponsiveImageExtension:
-  default_method: CroppedImage
+  default_method: Fill
 ```
 
 It can also be passed into your template function.
 ```
-$MyImage.MyResponsiveSet('CroppedImage', 800, 600)
+$MyImage.MyResponsiveSet('Fill', 800, 600)
 ```
 
 

@@ -17,7 +17,7 @@ use RuntimeException;
  * Heyday\ResponsiveImages\ResponsiveImageExtension:
  *   sets:
  *     MyResponsiveImageSet:
- *       method: CroppedImage
+ *       method: Fill
  *       arguments:
  *         "(min-width: 200px)": [200, 100]
  *         "(min-width: 800px)": [200, 400]
