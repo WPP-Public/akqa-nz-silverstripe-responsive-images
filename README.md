@@ -35,6 +35,7 @@ Heyday\ResponsiveImages\ResponsiveImageExtension:
         '(min-width: 200px)': [100]
 
     ResponsiveSet2:
+      template: Includes/MyCustomImageTemplate
       method: Fill
       arguments:
         '(min-width: 1000px) and (min-device-pixel-ratio: 2.0)': [1800, 1800]
@@ -100,6 +101,3 @@ It can also be passed into your template function.
 ```
 $MyImage.MyResponsiveSet('Fill', 800, 600)
 ```
-
-
-
