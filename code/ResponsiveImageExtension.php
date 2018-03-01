@@ -135,12 +135,15 @@ class ResponsiveImageExtension extends \Extension
             array_unshift($defaultArgs, $methodName);
         }
 
+        // Custom template
+        $templatePath = isset($config['template']) ? $config['template'] : 'ResponsiveImageSet';
+
         $image = call_user_func_array(array($this->owner, 'getFormattedImage'), $defaultArgs);
         return $this->owner->customise(array(
             'Sizes' => $sizes,
             'DefaultImage' => $image,
             'ExtraClasses' => $cssClasses
-        ))->renderWith('ResponsiveImageSet');
+        ))->renderWith($templatePath);
     }
 
     /**

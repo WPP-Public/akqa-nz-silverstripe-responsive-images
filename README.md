@@ -33,6 +33,7 @@ Heyday\ResponsiveImages\ResponsiveImageExtension:
         '(min-width: 200px)': [100]
 
     ResponsiveSet2:
+      template: MyCustomImageTemplate
       method: CroppedImage
       arguments:
         '(min-width: 1000px) and (min-device-pixel-ratio: 2.0)': [1800, 1800]
