@@ -4,3 +4,6 @@ Name: responsiveimages
 SilverStripe\Assets\Image:
   extensions:
     - Heyday\ResponsiveImages\ResponsiveImageExtension
+SilverStripe\Assets\Storage\DBFile:
+  extensions:
+    - Heyday\ResponsiveImages\ResponsiveImageExtension
