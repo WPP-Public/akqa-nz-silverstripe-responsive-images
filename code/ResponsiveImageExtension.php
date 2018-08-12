@@ -130,11 +130,13 @@ class ResponsiveImageExtension extends Extension
             ]));
         }
 
+        $templatePath = isset($config['template']) ? $config['template'] : 'Includes/ResponsiveImageSet';
+
         return $this->owner->customise([
             'Sizes' => $sizes,
 
             'DefaultImage' => $this->getResampledImage($methodName, $defaultArgs)
-        ])->renderWith('Includes/ResponsiveImageSet');
+        ])->renderWith($templatePath);
     }
 
     /**
