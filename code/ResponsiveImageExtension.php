@@ -39,7 +39,7 @@ class ResponsiveImageExtension extends Extension
      * @var string
      * @config
      */
-    private static $default_method = 'SetWidth';
+    private static $default_method = 'ScaleWidth';
 
     /**
      * @var string
