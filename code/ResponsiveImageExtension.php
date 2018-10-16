@@ -130,11 +130,17 @@ class ResponsiveImageExtension extends Extension
             ]));
         }
 
+        if (isset($config['css_classes'])) {
+            $extraClasses = $config['css_classes'];
+        } else {
+            $extraClasses = Config::inst()->get(__CLASS__, 'default_css_classes');
+        }
+
         $templatePath = isset($config['template']) ? $config['template'] : 'Includes/ResponsiveImageSet';
 
         return $this->owner->customise([
             'Sizes' => $sizes,
-
+            'ExtraClasses' => $extraClasses,
             'DefaultImage' => $this->getResampledImage($methodName, $defaultArgs)
         ])->renderWith($templatePath);
     }
