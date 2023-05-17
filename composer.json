@@ -5,8 +5,8 @@
     "type": "silverstripe-vendormodule",
     "license": "MIT",
     "require": {
-        "silverstripe/vendor-plugin": "^1.0",
-        "silverstripe/framework": "^4.0"
+        "silverstripe/vendor-plugin": "^1.0 || ^2.0",
+        "silverstripe/framework": "^4.0 || ^5.0"
     },
     "extra": {
         "expose": [
