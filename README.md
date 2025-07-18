@@ -11,6 +11,8 @@ This module is highly configurable and relies on [picturefill.js](https://github
 SilverStripe 4.0 or higher
 
 For a SS 3.x compatible-version, please see branch 1.0
+For a SS 4.x compatible-version, please see branch 2.0
+For a SS 5.x compatible-version, please see branch 3.0
 
 ## Installation
 
