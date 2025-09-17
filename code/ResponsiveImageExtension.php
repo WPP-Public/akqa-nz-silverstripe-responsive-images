@@ -4,8 +4,8 @@ namespace Heyday\ResponsiveImages;
 
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
-use SilverStripe\ORM\ArrayList;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\List\ArrayList;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\View\Requirements;
 use Exception;
 use RuntimeException;
@@ -30,27 +30,24 @@ use RuntimeException;
 class ResponsiveImageExtension extends Extension
 {
     /**
-     * @var array
      * @config
      */
-    private static $default_arguments = [800, 600];
+    private static array $default_arguments = [800, 600];
 
     /**
-     * @var string
      * @config
      */
-    private static $default_method = 'ScaleWidth';
+    private static string $default_method = 'ScaleWidth';
 
     /**
-     * @var string
      * @config
      */
-    private static $default_css_classes = '';
+    private static string $default_css_classes = '';
 
     /**
      * @var array A cached copy of the image sets
      */
-    protected $configSets;
+    protected array $configSets = [];
 
     /**
      * {@inheritdoc}
@@ -163,9 +160,8 @@ class ResponsiveImageExtension extends Extension
      * case-insensitive comparison.
      *
      * @param string $setName The name of the responsive image set to get
-     * @return array|false
      */
-    protected function getConfigForSet($setName)
+    protected function getConfigForSet(string $setName): null|bool|array
     {
         $name = strtolower($setName);
         $sets = array_change_key_case($this->configSets, CASE_LOWER);
@@ -175,20 +171,16 @@ class ResponsiveImageExtension extends Extension
 
     /**
      * Returns a list of available image sets.
-     *
-     * @return array
      */
-    protected function getResponsiveSets()
+    protected function getResponsiveSets(): array
     {
         return array_map('strtolower', array_keys($this->configSets));
     }
 
     /**
      * Defines all the methods that can be called in this class.
-     *
-     * @return array
      */
-    public function allMethodNames()
+    public function allMethodNames(): array
     {
         return $this->getResponsiveSets();
     }
