@@ -1,18 +1,17 @@
-# Responsive Images for SilverStripe
+# Responsive Images for Silverstripe
 
 ## Introduction
 
-This module provides the ability to send a series of configured image sizes to the client without actually loading any resources until a media query can be executed.
+This highly configurable module wraps an image in a picture element with a set of sources for different media queries. This enables the browser to load the matching image size for the current viewport.
 
-This is particularly useful for sites that use responsive design, because it means that smaller viewports can receive images optimised for their size rather than pulling down a single image optimised for desktop.
-This module is highly configurable and relies on [picturefill.js](https://github.com/scottjehl/picturefill) for the client-side magic.
+This is particularly useful in responsive design and page load optimisation. Different viewports can receive an image optimised for their size rather than one size fits all.
 
 ## Requirements
-SilverStripe 4.0 or higher
+Silverstripe CMS 6.0 or higher
 
-For a SS 3.x compatible-version, please see branch 1.0
-For a SS 4.x compatible-version, please see branch 2.0
-For a SS 5.x compatible-version, please see branch 3.0
+For a CMS 5.x compatible-version, please see branch 3.0
+For a CMS 4.x compatible-version, please see branch 2.0
+For a CMS 3.x compatible-version, please see branch 1.0
 
 ## Installation
 
@@ -56,7 +55,7 @@ Heyday\ResponsiveImages\ResponsiveImageExtension:
       default_arguments: [1200, 1200, '666666']
 ```
 
-Now, run `?flush=1` to refresh the config manifest, and you will have the new methods injected into your Image class that you can use in templates.
+Now, add `?flush=1` to the URL to refresh the config manifest. You can then use the new Image class methods in your template like so:
 
 ```
 $MyImage.ResponsiveSet1
@@ -64,20 +63,17 @@ $MyImage.ResponsiveSet2
 $MyImage.ResponsiveSet3
 ```
 
-The output of the first method (`ResponsiveSet1`) will look something like this, remember that the first matching media-query will be taken:
+The output of the first method (`ResponsiveSet1`) will look something like this. Remember that the browser will render the first matching source.
 ```html
 <picture>
-        <source media="(min-width: 1200px)" srcset="/assets/Uploads/_resampled/SetWidth100-my-image.jpeg">
-
-        <source media="(min-width: 800px)" srcset="/assets/Uploads/_resampled/SetWidth400-my-image.jpeg">
-
-        <source media="(min-width: 200px)" srcset="/assets/Uploads/_resampled/SetWidth100-my-image.jpeg">
-
-    <img src="/assets/Uploads/_resampled/SetWidth640480-my-image.jpeg" alt="my-image.jpeg">
+  <source media="(min-width: 1200px)" srcset="/assets/Uploads/_resampled/SetWidth800-my-image.jpeg" width="800" height="800">
+  <source media="(min-width: 800px)" srcset="/assets/Uploads/_resampled/SetWidth400-my-image.jpeg" width="400" height="400">
+  <source media="(min-width: 200px)" srcset="/assets/Uploads/_resampled/SetWidth100-my-image.jpeg" width="100" height="100">
+  <img src="/assets/Uploads/_resampled/SetWidth640480-my-image.jpeg" alt="My Image Title" loading="auto" width="800" height="800">
 </picture>
 ```
 
-The final output to your browser will place the correct image URL into one of the span tags and only one image will render. As the window is resized, new images are loaded into the DOM.
+As the window is resized, new images are loaded into the DOM.
 
 
 ### Other options
@@ -90,7 +86,7 @@ Heyday\ResponsiveImages\ResponsiveImageExtension:
 
 You can also pass arguments for the default image at the template level.
 ```
-$MyImage.MyResponsiveSet(900, 600)
+$MyImage.ResponsiveSet1(900, 600)
 ```
 
 The default resampling method is SetWidth, but this can be overridden in your config.
@@ -101,5 +97,5 @@ Heyday\ResponsiveImages\ResponsiveImageExtension:
 
 It can also be passed into your template function.
 ```
-$MyImage.MyResponsiveSet('Fill', 800, 600)
+$MyImage.ResponsiveSet1('Fill', 800, 600)
 ```
