@@ -6,7 +6,6 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Model\List\ArrayList;
 use SilverStripe\Model\ArrayData;
-use SilverStripe\View\Requirements;
 use Exception;
 use RuntimeException;
 
@@ -85,8 +84,6 @@ class ResponsiveImageExtension extends Extension
      */
     protected function createResponsiveSet($config, $defaultArgs, $set)
     {
-        Requirements::javascript('heyday/silverstripe-responsive-images:javascript/picturefill/picturefill.min.js');
-
         if (!isset($config['arguments']) || !is_array($config['arguments'])) {
             throw new Exception("Responsive set $set does not have any arguments defined in its config.");
         }
